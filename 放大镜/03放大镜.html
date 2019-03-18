@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>03放大镜</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            vertical-align: top;
+        }
+
+        .outDiv {
+            width: 260px;
+            border: 2px solid greenyellow;
+            margin: 30px;
+            position: relative;
+        }
+
+        /* 1,缩小的大图 */
+        .smallDiv {
+            position: relative;
+        }
+
+        #smallImg {
+            width: 100%;
+        }
+
+        #mask {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 25, 20, 0.5);
+            position: absolute;
+            left: 0;
+            top: 0;
+            /* 隐藏 */
+            display: none;
+        }
+
+        /* 轮播图 */
+        .wrapDiv {
+            width: 100%;
+            height: 195px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #conDiv {
+            width: 780px;
+            position: absolute;
+            font-size: 0;
+            transition: all 1s;
+        }
+
+        #conDiv img {
+            width: 130px;
+        }
+
+        #left,
+        #right {
+            width: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            font-size: 20px;
+            color: #fff;
+            text-align: center;
+            line-height: 195px;
+        }
+
+        #right {
+            right: 0;
+            cursor: pointer;
+        }
+
+        #left {
+            left: 0;
+            cursor: pointer;
+        }
+
+        /* 装大图部分 */
+        .bigDiv {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            right: -220px;
+            top: 0;
+            overflow: hidden;
+            /* 隐藏 */
+            display: none;
+        }
+        #bigImg {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 外层控制页面 -->
+    <div class="outDiv">
+        <!-- 1, 缩小的大图 -->
+        <div id="smallDiv">
+            <img src="img/1.jpg" alt="" id="smallImg">
+            <div id="mask"></div>
+        </div>
+        <!-- 2, 轮播图 -->
+        <div class="wrapDiv">
+            <div id="conDiv">
+                <img src="img/1.jpg" alt="">
+                <img src="img/2.jpg" alt="">
+                <img src="img/3.jpg" alt="">
+                <img src="img/4.jpg" alt="">
+                <img src="img/5.jpg" alt="">
+                <img src="img/6.jpg" alt="">
+            </div>
+            <div id="left">&lt;</div>
+            <div id="right">&gt;</div>
+        </div>
+        <!-- 3, 装大图的部分 -->
+        <div class="bigDiv">
+            <img src="img/1.jpg" alt="" id="bigImg">
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    /*
+    一,放大镜
+    */
+    //获取页面元素
+    var smallImg = document.getElementById("smallImg");
+    var smallDiv = document.getElementById("smallDiv");
+    var maskDiv = document.getElementById("mask");
+    var bigDiv = document.querySelector(".bigDiv");
+    var bigImg = document.getElementById("bigImg");
+    var left = document.getElementById("left");
+    var right = document.getElementById("right");
+    var imgS = document.querySelectorAll("#conDiv img");
+    console.log(imgS);
+
+    //给小图关联鼠标移入事件
+    smallDiv.onmouseover = function () {
+        //1,mask显示出来
+        maskDiv.style.display = "block";
+        //2,bigDiv显示出来
+        bigDiv.style.display = "block";
+
+        //计算比例
+        var xScale = (bigImg.clientWidth - bigDiv.clientWidth) / (smallDiv.clientWidth - maskDiv.clientWidth);
+        var yScale = (bigImg.clientHeight - bigDiv.clientHeight) / (smallDiv.clientHeight - maskDiv.clientHeight);
+
+        //3,鼠标跟随
+        document.onmousemove = function (e) {
+            //maskDiv的左边距
+            var even = e || window.event;
+            //上边距
+            var t = even.clientY - elementTop(smallImg) - maskDiv.offsetHeight / 2;
+            //左边距
+            var l = even.clientX - elementLeft(smallImg) - maskDiv.offsetWidth / 2;
+            //如果body上边有卷进去的话
+            if(document.body.scrollTop || document.documentElement.scrollTop){
+                //就定义一个变量记录下
+                var bodyTop = document.body.scrollTop || document.documentElement.scrollTop;
+                //t上边距就加上它
+                t += bodyTop;
+            }
+            //如果body左边有卷进去的话
+            if(document.body.scrollLeft || document.documentElement.scrollLeft){
+                //就定义一个变量记录下
+                var bodyLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+                //l左边距加上它
+                l += bodyLeft;
+            }
+            
+            //做一个边框限制
+            //求出smallDiv的可视宽度
+            var width = smallDiv.clientWidth;
+            //求出smallDiv的可视高度
+            var height = smallDiv.clientHeight;
+
+            if (l <= 0) {
+                l = 0;
+            }else if(l > (width - maskDiv.offsetWidth)){
+                l = (width - maskDiv.offsetWidth);
+            }
+            if(t <= 0){
+                t = 0;
+            }else if(t > (height - maskDiv.offsetHeight)){
+                t = (height - maskDiv.offsetHeight);
+            }
+            
+            //蒙版maskDiv的移动
+            maskDiv.style.left = l + "px";
+            maskDiv.style.top = t + "px";
+            
+            //移动大图bigImg
+            bigImg.style.left = -l * xScale + "px";
+            bigImg.style.top = -t * yScale + "px";
+        }
+    }
+
+
+    //小图关联鼠标移出事件
+    smallDiv.onmouseout = function () {
+        //1,mask隐藏
+        maskDiv.style.display = "none";
+        //2,bigDiv隐藏
+        bigDiv.style.display = "none";
+        //3,取消鼠标跟随
+        document.onmouseover = null;
+    }
+
+    // 使用递归函数求img 到浏览器左边缘的距离
+    function elementLeft(ele) {
+        var eleLeft = ele.offsetLeft + ele.clientLeft;
+        //如果有存在已定位父级,则继续计算
+        if (ele.offsetParent) {
+            return eleLeft + elementLeft(ele.offsetParent);
+        }
+        //直到没有已定位父位置,并返回该值
+        return eleLeft;
+    }
+    // 使用递归函数求img 到浏览器上边缘的距离
+    function elementTop(ele) {
+        var eleTop = ele.offsetTop + ele.clientTop;
+        //如果有存在已定位父级,则继续计算
+        if (ele.offsetParent) {
+            return eleTop + elementTop(ele.offsetParent);
+        }
+        //直到没有已定位父位置,并返回该值
+        return eleTop;
+    }
+    /*
+        二,轮播图
+    */
+    var l = 0;
+    left.onclick = function () {
+        l -= 130;
+        conDiv.style.left = l + "px";
+        if (l <= -520) {
+            l = -520;
+            conDiv.style.left = "-520px";
+        }
+    }
+    right.onclick = function () {
+        l += 130;
+        conDiv.style.left = l + "px";
+        if (l >= 0) {
+            l = 0;
+            conDiv.style.left = 0;
+        }
+    }
+
+    //添加图片的鼠标移入事件,并且切换img的src
+    for (var i = 0; i < imgS.length; i++) {
+        imgS[i].onmouseover = function () {
+            smallImg.src = this.src;
+            bigImg.src = this.src;
+        }
+    }
+</script>
+
+</html>
