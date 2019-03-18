@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>01轮播图</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #winDiv{
+            width: 960px;
+            height: 540px;
+            border: 2px solid gold;
+            margin: 50px auto 0;
+            overflow: hidden;
+            position: relative;
+        }
+        #conDiv{
+            width: 8640px;
+            /* height: 540px; */
+            font-size: 0;
+            position: absolute;
+        }
+        #conDiv img{
+            width: 960px;
+            height: 540px;
+        }
+        #clickDiv{
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 10px;
+            text-align: center;
+            font-size: 0;
+            word-spacing: 10px;
+        }
+        #clickDiv span{
+            font-size: 16px;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            /* border: 1px solid; */
+            border-radius: 50%;
+            color: #fff;
+        }
+        .unseclect{
+            background-color: black;
+        }
+        .seclect{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="winDiv">
+        <div id="conDiv">
+            <img src="img/girl1.jpg" alt="">
+            <img src="img/girl2.jpg" alt="">
+            <img src="img/girl3.jpg" alt="">
+            <img src="img/girl4.jpg" alt="">
+            <img src="img/girl5.jpg" alt="">
+            <img src="img/girl6.jpg" alt="">
+            <img src="img/girl1.jpg" alt="">
+        </div>
+        <div id="clickDiv">
+            <span class="seclect">1</span>
+            <span class="unseclect">2</span>
+            <span class="unseclect">3</span>
+            <span class="unseclect">4</span>
+            <span class="unseclect">5</span>
+            <span class="unseclect">6</span>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    //获取元素
+    var conDiv = document.getElementById("conDiv");
+    var spans = document.getElementsByTagName("span");
+    // console.log(spans);
+
+    //一,自动轮播
+    var cont = 0;
+    var timer1 ,timer2, timer3;
+    //先调用一次,开启自动播放
+    starAutoPlay();
+    //定义函数自动播放
+    function starAutoPlay() {
+        timer1 = setInterval(function(){
+            cont++;
+            //定义一个变量a记录次数
+            var a = 0;
+            //定义一个变量w为变化量,也就是每次都是左移一张图片的宽度-960;
+            var w = -960;
+            //定义一个变量c为总共需要走的次数30次
+            var c = 30;
+            //定义一个变量b记录当前图片的位置
+            var b = conDiv.offsetLeft;
+            timer2 = setInterval(function(){
+                //每次都需要走一步
+                a++;
+                //将left值分解为30次,因为图片每次是走-960,所以每次走w / c的距离,再乘以次数,没50毫秒走一次,一共走1500毫秒,剩余500毫秒是图片停留的时间.
+                //因为图片从0走完-960时,第二张的时候又是从0开始的,因为第二张图片的最左边已经移位了-960,所以需要获取图片的当前left值,然后才能继续位移,所以需要b变量当前left值加上位移的.
+                conDiv.style.left = b + (w / c * a) + "px";
+                if(a >= c){
+                //如果走的次数大于等于30次后,就不需要在位移了,所以需要清除小计时器.
+                    clearInterval(timer2);
+                    //并且,当图片到达第6张的时候,就回到0,而且图片的left值也回到0,这样可以使图片回到最开始位置
+                    if(cont > 5){
+                        cont = 0;
+                        conDiv.style.left = 0;
+                    }
+                    //修改span的背景颜色
+                    changeSpanBG(cont);
+                }
+            }, 50)
+        },2000)
+    }
+    //给下边的圆圈换颜色
+    function changeSpanBG(index) {
+        for(var i = 0; i < spans.length; i++){
+            if (i == index) {
+                spans[i].className = "seclect";
+            } else {
+                spans[i].className = "unseclect";
+            }
+        }
+    }
+
+    //二,手动轮播
+    //给每一个span关联鼠标移入事件
+    for(var i = 0; i < spans.length; i++){
+        //给每个span添加index属性,记录自己在spans数组中的下标
+        spans[i].index = i;
+        //给每个span关联鼠标移入事件
+        spans[i].onmouseover = function(){
+            //1,停止自动轮播
+            clearInterval(timer1);
+            clearInterval(timer2);
+            //2,给span修改颜色
+            //注:谁调用当前函数,this就是谁
+            changeSpanBG(this.index);
+            handChangeImage(this.index);
+        }
+    }
+
+    //手动切换图片
+    function handChangeImage(imgIndex){
+        var b = conDiv.offsetLeft;
+        var t = 0;
+        var d = 30;
+        var c = -960 * imgIndex - b;
+        clearInterval(timer3);
+        timer3 = setInterval(function(){
+            t++;
+            conDiv.style.left = (b + c / d * t) + "px";
+            if(t >= d){
+                //取消计时器
+                clearInterval(timer3);
+                //开启自动播放
+                starAutoPlay();
+                //重新标记当前是哪张图片
+                cont = imgIndex;
+            }
+        }, 50)
+    }
+</script>
+</html>

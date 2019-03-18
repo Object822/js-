@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+ul, li{
+    list-style-type: none;
+}
+img {
+    vertical-align: top;
+}
+
+/* 游戏主页面 */
+#game {
+    width: 343px;
+    height: 480px;
+    margin: 30px auto 0;
+    background: url(../img/bg.jpg) no-repeat;
+    position: relative;
+    /* overflow: hidden; */
+}
+
+/* 头部标题 */
+#head {
+    width: 236px;
+    height: 77px;
+    background: url(../img/head.jpg) no-repeat;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    margin-left: -118px;
+    
+}
+#head img {
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* 关键帧动画 */
+    animation: flyBird 1.5s infinite linear;
+} 
+@keyframes flyBird {
+    form {
+        top: 0;
+    }
+    50% {
+        top: 70%;
+    }
+    to {
+        top: 0;
+    }
+}
+
+/* 开始菜单 */
+#startMenu {
+    position: absolute;
+    top: 260px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    /* 提升层级 */
+    z-index: 1;
+}
+#startMenu img {
+    cursor: pointer;
+}
+
+/* 结束菜单 */
+#endMenu {
+    width: 269px;
+    height: 135px;
+    position: absolute;
+    background: url(../img/message.jpg) no-repeat;
+    top: 50%;
+    margin-top: -68px;
+    left: 50%;
+    margin-left: -135px;
+    /* 隐藏 */
+    display: none;
+    z-index: 5;
+}
+/* 装饰当前分数 */
+#currentScore {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    font-size: 30px;
+}
+/* 最高分数 */
+#bestScore {
+    position: absolute;
+    right: 30px;
+    top: 80px;
+    font-size: 30px;
+}
+
+/* 小鸟 */
+#bird {
+    position: absolute;
+    top: 210px;
+    left: 62px;
+    /* 隐藏 */
+    display: none;
+}
+
+/* 分数 */
+#score {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    /* 隐藏 */
+    display: none;
+}
+
+/* 管道 */
+#pipeUL {
+    height: 423px;
+    position: relative;
+}
+.pipe {
+    width: 62px;
+    height: 423px;
+    position: absolute;
+    top: 0;
+}
+/* 上管道 */
+.pipe_top {
+    width: 62px;
+    height: 100px;
+    background: url(../img/up_pipe.png) no-repeat bottom, url(../img/up_mod.png) repeat-y;
+}
+
+/* 下管道 */
+.pipe_bottom {
+    width: 62px;
+    height: 100px;
+    background: url(../img/down_pipe.png) no-repeat top, url(../img/down_mod.png) repeat-y;
+    position: absolute;
+    bottom: 0;
+}

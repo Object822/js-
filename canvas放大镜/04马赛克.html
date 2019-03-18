@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>04马赛克</title>
+    <style>
+        #firCan {
+            display: block;
+            margin: auto;
+            border: 1px solid gold;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="firCan" width="960" height="540">
+        废物,升级浏览器吧!
+    </canvas>
+</body>
+<script>
+    // 1,获取canvas元素
+    var canvas = document.getElementById("firCan");
+    // 2,获取2d渲染上下文
+    var context = canvas.getContext('2d');
+
+    // 3,绘制图片
+    var imgM = new Image();
+    imgM.src = "./img/girl1.jpg";
+
+    imgM.onload = function () {
+        context.drawImage(imgM, 0, 0, canvas.width, canvas.height);
+
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        //获取图片的颜色数组
+        var dataArr = imageData.data;
+        //定义变量记录行和列
+        var numLine = 20;
+        var numCol = 40
+        //定义变量记录宽和高
+        var imgW = canvas.width / numCol;
+        var imgH = canvas.height / numLine;
+        
+        //如果想用圆形的马赛克,在绘制之前就需要先获取每一个像素
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        //如果直接这样绘制的话,会发现圆形马赛克下面还是有图片,所以需要清除之前的图片
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (var i = 0; i < numLine; i++) {
+            for (var j = 0; j < numCol; j++) {
+                //定义矩形的坐标
+                var x = imgW * j;
+                var y = imgH * i;
+                //颜色
+                //找到矩形中心点
+                var centerX = x + imgW / 2;
+                var centerY = y + imgH / 2;
+                //这样就需要重新计算圆形所在的位置,并获取相对应的颜色
+                var index = (Math.floor(centerY - 1) * canvas.width + Math.floor(centerX)) * 4;
+
+                //获取imageData对象
+                // var imageData = context.getImageData(centerX, centerY, 1, 1);
+                //圆形
+                context.beginPath();
+                context.arc(centerX, centerY, imgW / 2, Math.PI / 180 * 0, Math.PI / 180 * 360, false);
+                //修改颜色
+                context.fillStyle = "rgb(" + imageData.data[index] + "," + imageData.data[index + 1] + "," + imageData.data[index + 2]+ ")";
+                context.closePath();
+                context.fill();
+
+                //矩形
+                // context.fillRect(x, y, imgW, imgH);
+                
+                
+            }
+        }
+    }
+</script>
+
+</html>
